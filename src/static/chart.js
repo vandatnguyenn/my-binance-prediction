@@ -35,6 +35,8 @@ var candleSeries = chart.addCandlestickSeries({
 	wickUpColor: 'rgba(255, 144, 0, 1)',
 });
 
+const lineSeries = chart.addLineSeries({ color: '#2962FF' });
+
 fetch('http://localhost:5000/history')
 	.then((r) => r.json())
 	.then((response) => {
@@ -49,6 +51,14 @@ fetch('http://localhost:5000/history')
 				close: item.close
 			}
 		}));
+	})
+
+fetch('http://localhost:5000/predictions')
+	.then((r) => r.json())
+	.then((respone) => {
+		lineSeries.setData(respone);
+
+		chart.timeScale().fitContent();
 	})
 
 

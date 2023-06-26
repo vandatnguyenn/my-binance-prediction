@@ -15,3 +15,5 @@ def date_to_milliseconds(date_str):
         d = d.replace(tzinfo=pytz.utc)
 
     return int((d - epoch).total_seconds() * 1000.0)
+
+print(date_to_milliseconds('now UTC+7'))
