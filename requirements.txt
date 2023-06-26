@@ -5,3 +5,10 @@ flask
 dateparser
 pytz
 datetime
+pandas
+matplotlib
+sklearn
+keras
+dash
+scikit-learn
+tensorflow
