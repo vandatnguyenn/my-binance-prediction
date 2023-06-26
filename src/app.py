@@ -9,9 +9,6 @@ app.secret_key = b'somelongrandomstring'
 
 client = Client("","")
 
-print("client")
-print(client)
-
 @app.route('/')
 def index():
     title = 'CoinView'
@@ -24,7 +21,7 @@ def history():
         symbol="BTCUSDT",
         interval="5m",
         limit=100000,
-        startTime= date_to_milliseconds("48 hours ago UTC"),
+        startTime= date_to_milliseconds("24 hours ago UTC"),
         endTime= date_to_milliseconds("now UTC")
     )
 
@@ -32,7 +29,7 @@ def history():
 
     for data in candlesticks:
         candlestick = { 
-            "time": data[0] / 1000, 
+            "time": data[0], 
             "open": data[1],
             "high": data[2], 
             "low": data[3], 

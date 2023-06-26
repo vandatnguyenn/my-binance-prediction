@@ -2,8 +2,8 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
 	width: 1000,
   	height: 500,
 	layout: {
-		background: { type: 'solid', color: 'white' },
-		textColor: 'rgba(255, 255, 255, 0.9)',
+		background: { type: 'solid', color: 'black' },
+		textColor: '#ffffff',
 	},
 	grid: {
 		vertLines: {
