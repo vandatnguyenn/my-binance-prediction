@@ -41,7 +41,6 @@ fetch('http://localhost:5000/history')
 		// console.log(response)
 
 		candleSeries.setData(response.map(item => {
-			console.log(item)
 			return {
 				time: item.time / 1000,
 				open: item.open,
@@ -59,8 +58,6 @@ binanceSocket.onmessage = function (event) {
 	var message = JSON.parse(event.data);
 
 	var candlestick = message.k;
-
-	console.log(candlestick)
 
 	candleSeries.update({
 		time: candlestick.t / 1000,

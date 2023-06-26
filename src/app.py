@@ -21,8 +21,8 @@ def history():
         symbol="BTCUSDT",
         interval="5m",
         limit=100000,
-        startTime= date_to_milliseconds("24 hours ago UTC"),
-        endTime= date_to_milliseconds("now UTC")
+        startTime= date_to_milliseconds("24 hours ago UTC+7"),
+        endTime= date_to_milliseconds("now UTC+7")
     )
 
     processed_candlesticks = []
