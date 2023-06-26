@@ -1,0 +1,7 @@
+python-binance
+numpy
+backtrader
+flask
+dateparser
+pytz
+datetime
