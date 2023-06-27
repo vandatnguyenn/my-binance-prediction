@@ -18,6 +18,10 @@ def date_to_milliseconds(date_str):
 
     return int((d - epoch).total_seconds() * 1000.0)
 
+def milliseconds_to_date(milliseconds):
+    seconds = milliseconds / 1000
+    return datetime.fromtimestamp(seconds)
+
 def writeCsv(filename, _data):
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
