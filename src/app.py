@@ -3,6 +3,7 @@ import csv, datetime
 from binance.client import Client
 from binance.enums import *
 from common.helpers import date_to_milliseconds
+from common.helpers import writeCsv
 
 app = Flask(__name__)
 app.secret_key = b'somelongrandomstring'
@@ -28,6 +29,7 @@ def history():
     # print(candlesticks)
 
     processed_candlesticks = []
+    _dataCsv = [['Date','Open','High','Low','Close','Volume']]
 
     for data in candlesticks:
         candlestick = { 
@@ -39,7 +41,9 @@ def history():
         }
 
         processed_candlesticks.append(candlestick)
+        _dataCsv.append([data[0], data[1], data[2], data[3], data[4], data[5]])
 
+    writeCsv("BTC-USD.csv", _dataCsv)
     return jsonify(processed_candlesticks)
 
 

@@ -2,6 +2,7 @@ import dateparser
 import pytz
 from datetime import datetime
 import csv
+import json
 
 def date_to_milliseconds(date_str):
     """Convert UTC date to milliseconds
@@ -17,23 +18,7 @@ def date_to_milliseconds(date_str):
 
     return int((d - epoch).total_seconds() * 1000.0)
 
-def writeCsv(_data):
-    with open('BTC-USD.csv', mode='w', newline='') as file:
+def writeCsv(filename, _data):
+    with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Date','Open','High','Low','Close','Adj Close','Volume'])
-        
-        saveData = []
-
-        for data in _data:
-            candlestick = [
-                data.Date,
-                data.Open,
-                data.High,
-                data.Low,
-                data.Close,
-                data.AdjClose,
-                data.Volume
-            ]
-            saveData.append(candlestick)
-        
-        writer.writerow(saveData)
+        writer.writerows(_data)
