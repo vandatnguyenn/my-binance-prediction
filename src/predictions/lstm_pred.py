@@ -5,8 +5,10 @@ from matplotlib.pylab import rcParams
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dropout,Dense
+from common.helpers import date_to_milliseconds
 
-def build_lstm_model():
+
+def lstm_prediction_process():
     rcParams['figure.figsize']=20,10
 
     scaler=MinMaxScaler(feature_range=(0,1))
@@ -33,7 +35,8 @@ def build_lstm_model():
 
     final_dataset=new_dataset.values
 
-    train_size = int(len(df) * 0.8)
+    # train_size = int(len(df) * 0.8)
+    train_size = int(len(df) - 100)
     train_data=final_dataset[0:train_size,:]
     valid_data=final_dataset[train_size:,:]
 
@@ -70,11 +73,23 @@ def build_lstm_model():
     X_test=np.array(X_test)
 
     X_test=np.reshape(X_test,(X_test.shape[0],X_test.shape[1],1))
+
     closing_price=lstm_model.predict(X_test)
     closing_price=scaler.inverse_transform(closing_price)
 
-    print(closing_price)
+    train_data=new_dataset[:train_size]
+    valid_data=new_dataset[train_size:]
+    valid_data['Predictions']=closing_price
 
-    lstm_model.save("saved_btcusd_lstm_model.h5")
+    print(valid_data[['Close',"Predictions"]])
 
-build_lstm_model()
+    # lstm_model.save("saved_btcusd_lstm_model.h5")
+
+    _returnData = []
+    for i in range(0, len(valid_data)):
+        _returnData.append({
+            "value": float(valid_data['Predictions'][i]),
+            "time": date_to_milliseconds(valid_data.index[i].strftime("%Y-%m-%d %H:%M:%S"))
+        })
+
+    return _returnData

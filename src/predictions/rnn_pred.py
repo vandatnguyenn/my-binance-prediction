@@ -5,8 +5,9 @@ from matplotlib.pylab import rcParams
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dropout,Dense
+from common.helpers import date_to_milliseconds
 
-def build_rnn_model():
+def rnn_prediction_process():
     rcParams['figure.figsize']=20,10
 
     scaler=MinMaxScaler(feature_range=(0,1))
@@ -85,8 +86,21 @@ def build_rnn_model():
     closing_price=rnn_model.predict(X_test)
     closing_price=scaler.inverse_transform(closing_price)
 
-    print(closing_price)
+    # rnn_model.save("saved_btcusd_rnn_model.h5")
 
-    rnn_model.save("saved_btcusd_rnn_model.h5")
+    train_data=new_dataset[:train_size]
+    valid_data=new_dataset[train_size:]
+    valid_data['Predictions']=closing_price
 
-build_rnn_model();
+    print(valid_data[['Close',"Predictions"]])
+
+    # lstm_model.save("saved_btcusd_lstm_model.h5")
+
+    _returnData = []
+    for i in range(0, len(valid_data)):
+        _returnData.append({
+            "value": float(valid_data['Predictions'][i]),
+            "time": date_to_milliseconds(valid_data.index[i].strftime("%Y-%m-%d %H:%M:%S"))
+        })
+
+    return _returnData
