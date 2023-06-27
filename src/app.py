@@ -24,8 +24,8 @@ def history():
         symbol="BTCUSDT",
         interval="5m",
         limit=100000,
-        startTime= date_to_milliseconds("24 hours ago UTC+7"),
-        endTime= date_to_milliseconds("now UTC+7")
+        startTime= date_to_milliseconds("24 hours ago UTC"),
+        endTime= date_to_milliseconds("now UTC")
     )
 
     # print(candlesticks)
@@ -46,7 +46,7 @@ def history():
         _dataCsv.append([milliseconds_to_date(data[0]), data[1], data[2], data[3], data[4], data[5]])
 
     # thêm dữ liệu để dự đoán
-    for i in range(1, 101):
+    for i in range(1, 110):
         _dataCsv.append([milliseconds_to_date(candlesticks[len(candlesticks) - 1][0] + i*300000), 0, 0, 0, 0, 0])
 
     writeCsv("BTC-USD.csv", _dataCsv)

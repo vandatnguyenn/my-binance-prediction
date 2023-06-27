@@ -89,7 +89,7 @@ def lstm_prediction_process():
     for i in range(0, len(valid_data)):
         _returnData.append({
             "value": float(valid_data['Predictions'][i]),
-            "time": date_to_milliseconds(valid_data.index[i].strftime("%Y-%m-%d %H:%M:%S"))
+            "time": date_to_milliseconds(valid_data.index[i].strftime("%Y-%m-%d %H:%M:%S")) / 1000
         })
 
     return _returnData
