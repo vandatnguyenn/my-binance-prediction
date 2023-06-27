@@ -11,10 +11,10 @@ def build_lstm_model():
 
     scaler=MinMaxScaler(feature_range=(0,1))
 
-    df=pd.read_csv("./BTC-USD.csv")
+    df=pd.read_csv("BTC-USD.csv")
     df.head()
 
-    df["Date"]=pd.to_datetime(df.Date,format="%Y-%m-%d")
+    df["Date"]=pd.to_datetime(df.Date,format="%Y-%m-%d %H:%M:%S")
     df.index=df['Date']
 
     plt.figure(figsize=(16,8))
@@ -73,4 +73,8 @@ def build_lstm_model():
     closing_price=lstm_model.predict(X_test)
     closing_price=scaler.inverse_transform(closing_price)
 
+    print(closing_price)
+
     lstm_model.save("saved_btcusd_lstm_model.h5")
+
+build_lstm_model()

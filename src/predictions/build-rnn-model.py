@@ -5,20 +5,16 @@ from matplotlib.pylab import rcParams
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dropout,Dense
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import LSTM
-from tensorflow.keras.layers import Dropout
 
 def build_rnn_model():
     rcParams['figure.figsize']=20,10
 
     scaler=MinMaxScaler(feature_range=(0,1))
 
-    df=pd.read_csv("./BTC-USD.csv")
+    df=pd.read_csv("BTC-USD.csv")
     df.head()
 
-    df["Date"]=pd.to_datetime(df.Date,format="%Y-%m-%d")
+    df["Date"]=pd.to_datetime(df.Date,format="%Y-%m-%d %H:%M:%S")
     df.index=df['Date']
 
     plt.figure(figsize=(16,8))
@@ -37,8 +33,9 @@ def build_rnn_model():
 
     final_dataset=new_dataset.values
 
-    train_data=final_dataset[0:987,:]
-    valid_data=final_dataset[987:,:]
+    train_size = int(len(df) * 0.8)
+    train_data=final_dataset[0:train_size,:]
+    valid_data=final_dataset[train_size:,:]
 
     scaler=MinMaxScaler(feature_range=(0,1))
     scaled_data=scaler.fit_transform(final_dataset)
@@ -88,4 +85,8 @@ def build_rnn_model():
     closing_price=rnn_model.predict(X_test)
     closing_price=scaler.inverse_transform(closing_price)
 
+    print(closing_price)
+
     rnn_model.save("saved_btcusd_rnn_model.h5")
+
+build_rnn_model();
