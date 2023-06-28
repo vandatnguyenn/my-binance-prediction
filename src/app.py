@@ -71,6 +71,12 @@ def predictions():
 
     _isReset = datetime.now() > _lastDate
 
-    _data = rnn_prediction_process(_isReset)
-    # _data = lstm_prediction_process(_isReset) 
-    return jsonify(_data)
+    _lstmData = rnn_prediction_process(_isReset)
+    _rnnData = lstm_prediction_process(_isReset)
+    _xgbData = []
+
+    return jsonify({
+        "lstm": _lstmData,
+        "rnn": _rnnData,
+        "xgb": _xgbData
+    })
