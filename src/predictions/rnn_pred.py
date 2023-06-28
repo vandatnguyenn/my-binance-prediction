@@ -5,9 +5,11 @@ from matplotlib.pylab import rcParams
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dropout,Dense
+from datetime import datetime
+from keras.models import load_model
 from common.helpers import date_to_milliseconds
 
-def rnn_prediction_process():
+def rnn_prediction_process(_isReset):
     rcParams['figure.figsize']=20,10
 
     scaler=MinMaxScaler(feature_range=(0,1))
@@ -51,26 +53,6 @@ def rnn_prediction_process():
 
     x_train_data=np.reshape(x_train_data,(x_train_data.shape[0],x_train_data.shape[1],1))
 
-    # # BUILD MODEL RNN
-    rnn_model = Sequential()
-    rnn_model.add(LSTM(units = 45, return_sequences = True, input_shape = (x_train_data.shape[1], 1)))
-    rnn_model.add(Dropout(0.2))
-
-    # #Adding three more LSTM layers with dropout regularization
-    for i in [True, True, False]:
-        rnn_model.add(LSTM(units = 45, return_sequences = i))
-        rnn_model.add(Dropout(0.2))
-
-    # #Adding our output layer
-    rnn_model.add(Dense(units = 1))
-
-    # #Compiling the recurrent neural network
-    rnn_model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-
-    # #Training the recurrent neural network
-    rnn_model.fit(x_train_data, y_train_data, epochs = 1, batch_size = 1)
-    #rnn_model.fit(x_training_data, y_training_data, epochs = 100, batch_size = 32)
-
     # X_test
     inputs_data=new_dataset[len(new_dataset)-len(valid_data)-60:].values
     inputs_data=inputs_data.reshape(-1,1)
@@ -82,11 +64,43 @@ def rnn_prediction_process():
     X_test=np.array(X_test)
     X_test=np.reshape(X_test,(X_test.shape[0],X_test.shape[1],1))
 
+    # Kiểm tra build lại model
+    if _isReset:
+        # BUILD MODEL RNN
+        rnn_model = Sequential()
+        rnn_model.add(LSTM(units = 45, return_sequences = True, input_shape = (x_train_data.shape[1], 1)))
+        rnn_model.add(Dropout(0.2))
+
+        # Adding three more LSTM layers with dropout regularization
+        for i in [True, True, False]:
+            rnn_model.add(LSTM(units = 45, return_sequences = i))
+            rnn_model.add(Dropout(0.2))
+
+        # Adding our output layer
+        rnn_model.add(Dense(units = 1))
+
+        # Compiling the recurrent neural network
+        rnn_model.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+        # Training the recurrent neural network
+        rnn_model.fit(x_train_data, y_train_data, epochs = 1, batch_size = 1)
+        #rnn_model.fit(x_training_data, y_training_data, epochs = 100, batch_size = 32)
+        
+        rnn_model.save("saved_btcusd_rnn_model.h5")
+        # cập nhật file lastDate
+        _now = datetime.now().strftime("%Y-%m-%d")
+        w_file = open("lastDate.txt", "w")
+        w_file.write(_now)
+        w_file.write(" 23:59:59")
+        w_file.close()
+
+    
+    # Load saved model
+    rnn_model=load_model("saved_btcusd_rnn_model.h5")
+
     # use model prediction
     closing_price=rnn_model.predict(X_test)
     closing_price=scaler.inverse_transform(closing_price)
-
-    # rnn_model.save("saved_btcusd_rnn_model.h5")
 
     train_data=new_dataset[:train_size]
     valid_data=new_dataset[train_size:]
@@ -94,7 +108,6 @@ def rnn_prediction_process():
 
     print(valid_data[['Close',"Predictions"]])
 
-    # lstm_model.save("saved_btcusd_lstm_model.h5")
 
     _returnData = []
     for i in range(0, len(valid_data)):

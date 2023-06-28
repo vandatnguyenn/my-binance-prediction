@@ -5,10 +5,12 @@ from matplotlib.pylab import rcParams
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dropout,Dense
+from datetime import datetime
+from keras.models import load_model
 from common.helpers import date_to_milliseconds
 
 
-def lstm_prediction_process():
+def lstm_prediction_process(_isReset):
     rcParams['figure.figsize']=20,10
 
     scaler=MinMaxScaler(feature_range=(0,1))
@@ -36,7 +38,6 @@ def lstm_prediction_process():
     final_dataset=new_dataset.values
 
     train_size = int(len(df) * 0.9)
-    # train_size = int(len(df) - 100)
     train_data=final_dataset[0:train_size,:]
     valid_data=final_dataset[train_size:,:]
 
@@ -53,26 +54,40 @@ def lstm_prediction_process():
 
     x_train_data=np.reshape(x_train_data,(x_train_data.shape[0],x_train_data.shape[1],1))
 
-    # BUILD MODEL LSTM
-    lstm_model=Sequential()
-    lstm_model.add(LSTM(units=50,return_sequences=True,input_shape=(x_train_data.shape[1],1)))
-    lstm_model.add(LSTM(units=50))
-    lstm_model.add(Dense(1))
-
-    lstm_model.compile(loss='mean_squared_error',optimizer='adam')
-    lstm_model.fit(x_train_data,y_train_data,epochs=1,batch_size=1,verbose=2)
-
+    # Tạo X test để dự đoán
     inputs_data=new_dataset[len(new_dataset)-len(valid_data)-60:].values
     inputs_data=inputs_data.reshape(-1,1)
     inputs_data=scaler.transform(inputs_data)
-
 
     X_test=[]
     for i in range(60,inputs_data.shape[0]):
         X_test.append(inputs_data[i-60:i,0])
     X_test=np.array(X_test)
-
     X_test=np.reshape(X_test,(X_test.shape[0],X_test.shape[1],1))
+
+    # Kiểm tra build lại model
+    if _isReset:
+        # BUILD MODEL LSTM
+        lstm_model=Sequential()
+        lstm_model.add(LSTM(units=50,return_sequences=True,input_shape=(x_train_data.shape[1],1)))
+        lstm_model.add(LSTM(units=50))
+        lstm_model.add(Dense(1))
+
+        lstm_model.compile(loss='mean_squared_error',optimizer='adam')
+        lstm_model.fit(x_train_data,y_train_data,epochs=1,batch_size=1,verbose=2)
+
+        # lưu model
+        lstm_model.save("saved_btcusd_lstm_model.h5")
+        # cập nhật file lastDate
+        _now = datetime.now().strftime("%Y-%m-%d")
+        w_file = open("lastDate.txt", "w")
+        w_file.write(_now)
+        w_file.write(" 23:59:59")
+        w_file.close()
+
+
+    # Load saved model
+    lstm_model=load_model("saved_btcusd_lstm_model.h5")
 
     closing_price=lstm_model.predict(X_test)
     closing_price=scaler.inverse_transform(closing_price)
@@ -83,7 +98,6 @@ def lstm_prediction_process():
 
     print(valid_data[['Close',"Predictions"]])
 
-    # lstm_model.save("saved_btcusd_lstm_model.h5")
 
     _returnData = []
     for i in range(0, len(valid_data)):

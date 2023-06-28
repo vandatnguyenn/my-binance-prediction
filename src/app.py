@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, flash, redirect, jsonify
-import csv, datetime
+# import csv, datetime
+from datetime import datetime
 from binance.client import Client
 from binance.enums import *
+import os
 from common.helpers import date_to_milliseconds, writeCsv, milliseconds_to_date
 from predictions.lstm_pred import lstm_prediction_process
 from predictions.rnn_pred import rnn_prediction_process
@@ -47,11 +49,28 @@ def history():
     # for i in range(1, 110):
     #     _dataCsv.append([milliseconds_to_date(candlesticks[len(candlesticks) - 1][0] + i*300000), 0, 0, 0, 0, 0])
 
+    # Lưu ngày hiện tại để reset model
+    if not os.path.exists("lastDate.txt"):
+        _now = milliseconds_to_date(candlesticks[len(candlesticks) - 1][0]).strftime("%Y-%m-%d")
+        w_file = open("lastDate.txt", "w")
+        w_file.write(_now)
+        w_file.write(" 23:59:59")
+        w_file.close()
+
     writeCsv("BTC-USD.csv", _dataCsv)
     return jsonify(processed_candlesticks)
 
 
 @app.route('/predictions')
 def predictions():
-    _data = lstm_prediction_process()   
+
+    # Kiểm tra reset model
+    f = open("lastDate.txt", "r")
+    _lastDate = datetime.strptime(f.read(), "%Y-%m-%d %H:%M:%S")
+    f.close()
+
+    _isReset = datetime.now() > _lastDate
+
+    _data = rnn_prediction_process(_isReset)
+    # _data = lstm_prediction_process(_isReset) 
     return jsonify(_data)
