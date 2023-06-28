@@ -35,12 +35,19 @@ var candleSeries = chart.addCandlestickSeries({
 	wickUpColor: 'rgba(255, 144, 0, 1)',
 });
 
-const lineSeries = chart.addLineSeries({ color: '#2962FF' });
+const lineSeries = chart.addLineSeries({
+	color: '#f00',
+	lineStyle: 0,
+	lineWidth: 1,
+	crosshairMarkerVisible: true,
+	crosshairMarkerRadius: 6,
+	lineType: 0,
+});
 
 fetch('http://localhost:5000/history')
 	.then((r) => r.json())
 	.then((response) => {
-		// console.log(response)
+		// console.log(response.length)
 
 		candleSeries.setData(response.map(item => {
 			return {

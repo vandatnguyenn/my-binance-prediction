@@ -34,7 +34,7 @@ def rnn_prediction_process():
 
     final_dataset=new_dataset.values
 
-    train_size = int(len(df) * 0.8)
+    train_size = int(len(df) * 0.9)
     train_data=final_dataset[0:train_size,:]
     valid_data=final_dataset[train_size:,:]
 

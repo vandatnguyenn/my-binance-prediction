@@ -16,7 +16,7 @@ def lstm_prediction_process():
     df=pd.read_csv("BTC-USD.csv")
     df.head()
 
-    df["Date"]=pd.to_datetime(df.Date,format="%Y-%m-%d %H:%M:%S")
+    df["Date"]=pd.to_datetime(df.Date,format="%Y-%m-%d %H:%M:%S", utc=False)
     df.index=df['Date']
 
     plt.figure(figsize=(16,8))
@@ -35,8 +35,8 @@ def lstm_prediction_process():
 
     final_dataset=new_dataset.values
 
-    # train_size = int(len(df) * 0.8)
-    train_size = int(len(df) - 100)
+    train_size = int(len(df) * 0.9)
+    # train_size = int(len(df) - 100)
     train_data=final_dataset[0:train_size,:]
     valid_data=final_dataset[train_size:,:]
 

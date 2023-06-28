@@ -23,12 +23,10 @@ def history():
     candlesticks = client.get_klines(
         symbol="BTCUSDT",
         interval="5m",
-        limit=100000,
-        startTime= date_to_milliseconds("24 hours ago UTC"),
+        limit=1000,
+        startTime= date_to_milliseconds("5000 mins ago UTC"),
         endTime= date_to_milliseconds("now UTC")
     )
-
-    # print(candlesticks)
 
     processed_candlesticks = []
     _dataCsv = [['Date','Open','High','Low','Close','Volume']]
@@ -46,8 +44,8 @@ def history():
         _dataCsv.append([milliseconds_to_date(data[0]), data[1], data[2], data[3], data[4], data[5]])
 
     # thêm dữ liệu để dự đoán
-    for i in range(1, 110):
-        _dataCsv.append([milliseconds_to_date(candlesticks[len(candlesticks) - 1][0] + i*300000), 0, 0, 0, 0, 0])
+    # for i in range(1, 110):
+    #     _dataCsv.append([milliseconds_to_date(candlesticks[len(candlesticks) - 1][0] + i*300000), 0, 0, 0, 0, 0])
 
     writeCsv("BTC-USD.csv", _dataCsv)
     return jsonify(processed_candlesticks)
