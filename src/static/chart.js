@@ -39,8 +39,6 @@ var candleSeries = chart.addCandlestickSeries({
 fetch('http://localhost:5000/history')
 .then((r) => r.json())
 .then((response) => {
-	// console.log(response.length)
-
 	candleSeries.setData(response.map(item => {
 		return {
 			time: item.time / 1000,
@@ -69,55 +67,61 @@ binanceSocket.onmessage = function (event) {
 	})
 }
 
-var predOptionProcess = (_option) => {
-	console.log(_option);
+var _predResults = null;
+var addLineSeriespProccess = (_option, predResult) => {
+	let _data = [];
+	let _color = "";
+	let _name;
 
-	document.getElementById("loading").style.display = "block";
+	switch (_option) {
+		case "lstm":
+			_data = predResult.lstm;
+			_color = "#0079FF";
+			_name = "LSTM";
+			break;
+		case "rnn":
+			_data = predResult.rnn;
+			_color = "#F86F03";
+			_name = "RNN";
+			break;
+		default:
+			_data = predResult.xbg;
+			_color = "#DD58D6";
+			_name = "XGBoost";
+	}
 
-	var lstmPredResult = null;
-	var rnnPredResult = null;
-	var xgbPredResult = null;
+	const lineSeries = chart.addLineSeries({
+		title: _name,
+		color: _color,
+		lineStyle: 0,
+		lineWidth: 1,
+		crosshairMarkerVisible: true,
+		crosshairMarkerRadius: 6,
+		lineType: 0,
+	});
 
+	lineSeries.setData(_data);
+	chart.timeScale().fitContent();
+
+	document.getElementById("loading").style.display = "none";
+}
+
+var getDataPrections = (_option) => {
 	fetch('http://localhost:5000/predictions')
 	.then((r) => r.json())
 	.then((respone) => {
-		console.log(respone);
+		_predResults = respone;
+		addLineSeriespProccess(_option, _predResults);
+	});
+}
 
-		lstmPredResult = respone.lstm;
-		rnnPredResult = respone.rnn;
-		xgbPredResult = respone.xgb;
+var predOptionProcess = (_option) => {
+	document.getElementById("loading").style.display = "block";
 
-		document.getElementById("loading").style.display = "none";
-	
-		_data = [];
-		let _color = "";
-		switch (_option) {
-			case "lstm":
-				_data = lstmPredResult;
-				_color = "#0079FF";
-				break;
-			case "rnn":
-				_data = rnnPredResult;
-				_color = "#F86F03";
-				break;
-			default:
-				_data = xgbPredResult;
-				_color = "#DD58D6";
-		}
-	
-		const lineSeries = chart.addLineSeries({
-			color: _color,
-			lineStyle: 0,
-			lineWidth: 1,
-			crosshairMarkerVisible: true,
-			crosshairMarkerRadius: 6,
-			lineType: 0,
-		});
-	
-		console.log(_data);
-	
-		lineSeries.setData(_data);
-		chart.timeScale().fitContent();
-	})
-
+	if (_predResults == null) {
+		getDataPrections(_option);
+	}
+	else {
+		addLineSeriespProccess(_option, _predResults);
+	}
 }
