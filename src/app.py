@@ -16,7 +16,7 @@ client = Client("","")
 
 @app.route('/')
 def index():
-    title = 'CoinView'
+    title = 'Coin View'
     return render_template('index.html', title=title)
 
 

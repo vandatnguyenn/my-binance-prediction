@@ -84,3 +84,8 @@ binanceSocket.onmessage = function (event) {
 		close: candlestick.c
 	})
 }
+
+var predOptionProcess = (_option) => {
+	console.log(_option);
+}
+predOptionProcess();
