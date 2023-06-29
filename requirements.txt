@@ -12,3 +12,4 @@ keras
 dash
 scikit-learn
 tensorflow
+xgboost

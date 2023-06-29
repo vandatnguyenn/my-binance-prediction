@@ -85,7 +85,7 @@ var addLineSeriespProccess = (_option, predResult) => {
 			_name = "RNN";
 			break;
 		default:
-			_data = predResult.xbg;
+			_data = predResult.xgb;
 			_color = "#DD58D6";
 			_name = "XGBoost";
 	}

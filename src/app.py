@@ -7,6 +7,7 @@ import os
 from common.helpers import date_to_milliseconds, writeCsv, milliseconds_to_date
 from predictions.lstm_pred import lstm_prediction_process
 from predictions.rnn_pred import rnn_prediction_process
+from predictions.xgb_pred import xgb_prediction_process
 
 
 app = Flask(__name__)
@@ -73,7 +74,7 @@ def predictions():
 
     _lstmData = rnn_prediction_process(_isReset)
     _rnnData = lstm_prediction_process(_isReset)
-    _xgbData = []
+    _xgbData = xgb_prediction_process(_isReset)
 
     return jsonify({
         "lstm": _lstmData,
