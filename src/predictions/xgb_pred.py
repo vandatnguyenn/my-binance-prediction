@@ -24,7 +24,6 @@ def xgb_prediction_process(_isReset):
         new_dataset["Date"][i]=data['Date'][i]
         new_dataset["Close"][i]=data["Close"][i]
         
-
     train_size = int(len(df) * 0.9)
     new_dataset.index=new_dataset.Date
     new_dataset.drop("Date",axis=1,inplace=True)
@@ -32,10 +31,10 @@ def xgb_prediction_process(_isReset):
     ################################################################
     raw_df = new_dataset
 
-    data = np.hstack([raw_df.values[::2, :], raw_df.values[1::2, :2]])
+    data = np.hstack([raw_df.values[::2, :], raw_df.values[1::2, :0]])
     target = raw_df.values[1::2, 0]
 
-    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.1, random_state=123)
+    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=123)
 
     # Khởi tạo DMatrix cho XGBoost
     dtrain = xgb.DMatrix(X_train, label=y_train)
@@ -49,7 +48,7 @@ def xgb_prediction_process(_isReset):
             'objective': 'reg:squarederror'}
 
         # Huấn luyện mô hình XGBoost
-        num_round = 10
+        num_round = 100
         bst = xgb.train(param, dtrain, num_round)
 
         # Lưu model
