@@ -106,8 +106,6 @@ def rnn_prediction_process(_isReset):
     valid_data=new_dataset[train_size:]
     valid_data['Predictions']=closing_price
 
-    print(valid_data[['Close',"Predictions"]])
-
 
     _returnData = []
     for i in range(0, len(valid_data)):

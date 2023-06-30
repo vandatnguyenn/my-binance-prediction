@@ -69,12 +69,8 @@ def xgb_prediction_process(_isReset):
     # Dự đoán kết quả trên tập kiểm tra
     closing_price = xgb_model.predict(dtest)
 
-    print(len(closing_price))
-
     valid_data=new_dataset[train_size:]
     valid_data['Predictions']=closing_price
-
-    print(valid_data[['Close',"Predictions"]])
 
     _returnData = []
     for i in range(0, len(valid_data)):
